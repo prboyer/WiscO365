@@ -23,7 +23,6 @@ Function Create-Function($methodName, $method, $outputFile, $actionWordsPath, $u
     $headers = Create-Headers -method $method -methodName $methodName -includeAlias $includeAlias
     $params = Create-Parameters -parameters $method.parameters
     $JSON = Create-JSON -parameters $method.parameters -methodName $methodName
-    
 
 Add-Content $outputFile `
 $headers
@@ -46,7 +45,7 @@ $JSON
         }
 "
 Add-Content $outputFile `
-"        #Invoke the function 
+"        #Invoke the function
         Invoke-HelperO365Function -body `$body
     }
 }
@@ -64,17 +63,16 @@ $originalName = $methodName
 $string = ""
 
 $string+=
-"<#
-.Synopsis
-    $($method.purpose)
-.OUTPUTS
-    $outputs
-.LINK
-    https://wiscmail.wisc.edu/admin/index.php?action=domain-domainadmin_api
-#>
-Function $normalizedName{
-    [CmdletBinding()]
-"
+"Function $normalizedName{
+    <#
+    .Synopsis
+        $($method.purpose)
+    .OUTPUTS
+        $outputs
+    .LINK
+        https://wiscmail.wisc.edu/admin/index.php?action=domain-domainadmin_api
+    #>
+    [CmdletBinding()]"
 
 If($normalizedOriginalName){
 $string+=
@@ -110,7 +108,7 @@ Function Create-Parameters($parameters){
             $paramString += "`t`t" + "# " + "$($parameters.$paramName.description)" + "`n"
             $paramString += "`t`t" + "[Parameter(Mandatory=$" + "$isRequired,Position=$i)]" + "`n"
             $paramString += if($predefVals){"`t`t"+ "[ValidateSet($predefVals)]" + "`n"}
-            $paramString += "`t`t" + "$" + "$paramName" 
+            $paramString += "`t`t" + "$" + "$paramName"
             $paramString += if($paramName -eq "domain"){" = `$Global:O365CurrentConnection.domain"}
             $paramString += if($i+1 -lt $j){",`n`n"}
 
@@ -122,7 +120,7 @@ Function Create-Parameters($parameters){
 Function Create-JSON($parameters, $methodName){
     $paramNames = $parameters | Get-Member -MemberType 'NoteProperty' | Select-Object -ExpandProperty 'Name'
     $JSONString = ""
-        
+
     $JSONString += "`t`t`t" + '"action" = ' + '"' + $methodName + '";' + "`n"
 
     $i=0
@@ -150,7 +148,7 @@ Function Normalize-FunctionName($origName, $actionWordsPath, $unallowedWords){
     Foreach ($actionWord in $actionWords){
         #Compare the method name to the pre-defined action words (verbs)
         If($origName -like "$($actionWord.originalVerb)*"){
-            $match = $true 
+            $match = $true
             #Check if the original verb has an alternate approved verb (which means the original is unapproved)
             If($actionWord.approvedVerb){
                 #If so, the verb will be the alternate approved verb, not the original verb
@@ -164,7 +162,7 @@ Function Normalize-FunctionName($origName, $actionWordsPath, $unallowedWords){
             }
         }
     }
-            
+
     #If the original name isn't like any of the verbs in the list
     If(!$match){
         #Separate at the first capital letter and remove all except the first word
@@ -239,7 +237,7 @@ Function Normalize-Outputs ($outputs){
 
     #Get the names of the outputs
     $outputNames = $outputs | Get-Member -MemberType 'NoteProperty' | Select-Object -ExpandProperty 'Name'
-    
+
     #Get the members of each of the outputs
     Foreach ($outputName in $outputNames){
         $outputMembers = $outputs.$($outputName)

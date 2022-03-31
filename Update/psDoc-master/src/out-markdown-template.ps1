@@ -19,10 +19,10 @@ function FixMarkdownString([string] $in = '', [bool] $includeBreaks = $false) {
 		'_' = '\_'
 		'{' = '\{'
 		'}' = '\}'
-		'[' = '\['
-		']' = '\]'
-		'(' = '\('
-		')' = '\)'
+		# '[' = '\['
+		# ']' = '\]'
+		# '(' = '\('
+		# ')' = '\)'
 		'#' = '\#'
 		'+' = '\+'
 		'!' = '\!'
@@ -44,7 +44,7 @@ function FixMarkdownString([string] $in = '', [bool] $includeBreaks = $false) {
 
 function FixMarkdownCodeString([string] $in) {
 	if ($in -eq $null) { return }
-	
+
 	TrimAllLines $in
 }
 
@@ -64,15 +64,17 @@ $commandsHelp | % {
 		$tmp = $synopsis
 		$synopsis = $syntax
 		$syntax = $tmp
-@"	
+@"
 ### Synopsis
 $(FixMarkdownString($syntax))
 "@
 	}
-@"	
+@"
 ### Syntax
+``````
 $(FixMarkdownString($synopsis))
-"@	
+``````
+"@
 
 	if (!($_.alias.Length -eq 0)) {
 @"
@@ -87,11 +89,10 @@ $(FixMarkdownString($synopsis))
 
 "@
 	}
-	
+
 	if($_.parameters){
 @"
 ### Parameters
-
 <table class="table table-striped table-bordered table-condensed visible-on">
 	<thead>
 		<tr>
@@ -119,14 +120,15 @@ $(FixMarkdownString($synopsis))
 		}
 @"
 	</tbody>
-</table>			
+</table>
+
 "@
 	}
 	$inputTypes = $(FixMarkdownString($_.inputTypes  | out-string))
 	if ($inputTypes.Length -gt 0 -and -not $inputTypes.Contains('inputType')) {
 @"
 ### Inputs
- - $inputTypes
+- $inputTypes
 
 "@
 	}
@@ -134,9 +136,10 @@ $(FixMarkdownString($synopsis))
 	if ($returnValues.Length -gt 0 -and -not $returnValues.StartsWith("returnValue")) {
 @"
 ### Outputs
- - $returnValues
-
 "@
+
+	$returnValues -split "`n" | ?{$_ -ne $null -or $_ -ne ""} | %{"- $($_.Trim())"}
+
 	}
 	$notes = $(FixMarkdownString($_.alertSet  | out-string))
 	if ($notes.Trim().Length -gt 0) {
@@ -153,9 +156,9 @@ $notes
 		$_.examples.example | % {
 @"
 **$(FixMarkdownString($_.title.Trim(('-',' '))))**
-
+``````powershell
 		$(FixMarkdownCodeString($_.code | out-string ))
-		
+``````
 $(FixMarkdownString($_.remarks | out-string ) $true)
 "@
 		}
@@ -165,7 +168,7 @@ $(FixMarkdownString($_.remarks | out-string ) $true)
 ### Links
 
 "@
-		$_.links | % { 
+		$_.links | % {
 @"
  - [$_.name]($_.link)
 "@
