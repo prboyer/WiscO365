@@ -462,7 +462,7 @@ Function Update-O365APIFunctions{
             }
 
             #Reload the module
-            Import-Module WiscO365 -Force -DisableNameChecking
+            Import-Module WiscO365 -Force -DisableNameChecking -ErrorAction SilentlyContinue
 
             Try{
                 #Generate HTML documentation

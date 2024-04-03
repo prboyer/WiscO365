@@ -9,6 +9,8 @@
     $includeAlias = $false
     )
 
+    #requires -RunAsAdministrator
+
 $actionWordsPath = "$PSScriptRoot\actionWords.csv"
 $unallowedWords = Get-Content "$PSScriptRoot\unallowedWords.txt"
 
